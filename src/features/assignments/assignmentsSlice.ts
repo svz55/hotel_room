@@ -19,7 +19,7 @@ export const assignRooms = () => async (dispatch: any, getState: () => RootState
 
   const dirtyRooms = initialRooms.rooms
     .filter((room) => room.status === 'dirty')
-    .sort((a, b) => a.floor - b.floor);
+    .sort((a, b) => a.floor - b.floor || a.entrance - b.entrance || a.number - b.number);
 
   const housekeepersStateTracker = initialHousekeepers.housekeepers.map(h => {
     const currentWorkload = h.assignedRooms.reduce((acc, roomId) => {
@@ -45,7 +45,7 @@ export const assignRooms = () => async (dispatch: any, getState: () => RootState
 
     if (availableHousekeeper) {
       dispatch(assignRoomToHousekeeper({ housekeeperId: availableHousekeeper.id, roomId: room.id }));
-      dispatch(updateRoomStatus({ id: room.id, status: 'assigned' }));
+      dispatch(updateRoomStatus({ id: room.id, status: 'assigned', assignedTo: availableHousekeeper.id }));
       
       availableHousekeeper.currentWorkload += room.capacity;
       availableHousekeeper.newlyAssigned.push(room.id);
@@ -53,8 +53,8 @@ export const assignRooms = () => async (dispatch: any, getState: () => RootState
   }
 
   // Send Telegram notification
-  const botToken = process.env.REACT_APP_TELEGRAM_BOT_TOKEN;
-  const channelId = process.env.REACT_APP_TELEGRAM_CHANNEL_ID;
+  const botToken = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+  const channelId = import.meta.env.VITE_TELEGRAM_CHANNEL_ID;
 
   if (botToken && channelId) {
     let message = '**Назначение номеров завершено**\n\n';
@@ -66,7 +66,7 @@ export const assignRooms = () => async (dispatch: any, getState: () => RootState
             h.newlyAssigned.forEach(roomId => {
                 const room = initialRooms.rooms.find(r => r.id === roomId);
                 if (room) {
-                    message += `- Номер ${room.id} (Этаж ${room.floor})\n`;
+                    message += `- №${room.number} (${room.designation}), Этаж ${room.floor}, Подъезд ${room.entrance}\n`;
                 }
             });
             message += '\n';

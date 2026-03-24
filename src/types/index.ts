@@ -1,10 +1,13 @@
 export interface Room {
   id: string;
   floor: number;
+  entrance: number;
   number: number;
-  capacity: number;
+  type: string;
+  designation: string;
+  capacity: number; // Corresponds to the number of beds/people
   status: 'clean' | 'dirty' | 'assigned';
-  assignedTo?: string | null;
+  assignedTo: string | null;
 }
 
 export interface Housekeeper {

@@ -5,43 +5,44 @@ interface RoomsState {
   rooms: Room[];
 }
 
+const generateRooms = (): Room[] => {
+  const rooms: Room[] = [];
+  const floors = 7;
+  const entrances = 3;
+  const roomsPerEntrancePerFloor = 5; // 5 номеров на этаже в каждом подъезде
+
+  const roomTypes = [
+    { type: 'Студия', capacity: 1, designation: 'Студия 1м' },
+    { type: 'ПК', capacity: 2, designation: 'ПК-2' },
+    { type: 'ПК', capacity: 4, designation: 'ПК-4' },
+    { type: 'ПК', capacity: 5, designation: 'ПК-5' },
+    { type: 'ПК', capacity: 6, designation: 'ПК-6' },
+  ];
+
+  for (let floor = 1; floor <= floors; floor++) {
+    for (let entrance = 1; entrance <= entrances; entrance++) {
+      for (let i = 0; i < roomsPerEntrancePerFloor; i++) {
+        const roomType = roomTypes[Math.floor(Math.random() * roomTypes.length)];
+        const roomNumber = floor * 100 + (entrance - 1) * roomsPerEntrancePerFloor + i + 1;
+
+        const room: Room = {
+          id: `${floor}-${entrance}-${roomNumber}`,
+          floor,
+          entrance,
+          number: roomNumber,
+          ...roomType,
+          status: Math.random() > 0.5 ? 'clean' : 'dirty',
+          assignedTo: null,
+        };
+        rooms.push(room);
+      }
+    }
+  }
+  return rooms;
+};
+
 const initialState: RoomsState = {
-  rooms: [
-    // Floor 1
-    { id: '101', floor: 1, number: 1, capacity: 1, status: 'clean', assignedTo: null },
-    { id: '102', floor: 1, number: 2, capacity: 2, status: 'dirty', assignedTo: null },
-    { id: '103', floor: 1, number: 3, capacity: 3, status: 'clean', assignedTo: null },
-    { id: '104', floor: 1, number: 4, capacity: 4, status: 'dirty', assignedTo: null },
-    { id: '105', floor: 1, number: 5, capacity: 5, status: 'clean', assignedTo: null },
-
-    // Floor 2
-    { id: '201', floor: 2, number: 1, capacity: 1, status: 'dirty', assignedTo: null },
-    { id: '202', floor: 2, number: 2, capacity: 2, status: 'dirty', assignedTo: null },
-    { id: '203', floor: 2, number: 3, capacity: 3, status: 'dirty', assignedTo: null },
-    { id: '204', floor: 2, number: 4, capacity: 4, status: 'clean', assignedTo: null },
-    { id: '205', floor: 2, number: 5, capacity: 5, status: 'clean', assignedTo: null },
-
-    // Floor 3
-    { id: '301', floor: 3, number: 1, capacity: 1, status: 'clean', assignedTo: null },
-    { id: '302', floor: 3, number: 2, capacity: 2, status: 'dirty', assignedTo: null },
-    { id: '303', floor: 3, number: 3, capacity: 3, status: 'clean', assignedTo: null },
-    { id: '304', floor: 3, number: 4, capacity: 4, status: 'dirty', assignedTo: null },
-    { id: '305', floor: 3, number: 5, capacity: 5, status: 'clean', assignedTo: null },
-
-    // Floor 4
-    { id: '401', floor: 4, number: 1, capacity: 1, status: 'dirty', assignedTo: null },
-    { id: '402', floor: 4, number: 2, capacity: 2, status: 'clean', assignedTo: null },
-    { id: '403', floor: 4, number: 3, capacity: 3, status: 'dirty', assignedTo: null },
-    { id: '404', floor: 4, number: 4, capacity: 4, status: 'clean', assignedTo: null },
-    { id: '405', floor: 4, number: 5, capacity: 5, status: 'dirty', assignedTo: null },
-
-    // Floor 5
-    { id: '501', floor: 5, number: 1, capacity: 1, status: 'clean', assignedTo: null },
-    { id: '502', floor: 5, number: 2, capacity: 2, status: 'dirty', assignedTo: null },
-    { id: '503', floor: 5, number: 3, capacity: 3, status: 'clean', assignedTo: null },
-    { id: '504', floor: 5, number: 4, capacity: 4, status: 'dirty', assignedTo: null },
-    { id: '505', floor: 5, number: 5, capacity: 5, status: 'clean', assignedTo: null },
-  ].map(room => ({ ...room, assignedTo: null })),
+  rooms: generateRooms(),
 };
 
 const roomsSlice = createSlice({
